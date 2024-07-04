@@ -18,6 +18,6 @@ class BackgroundWidget extends StatelessWidget {
           ),
           centerWidget
         ],
-      );
+      );  
   }
 }
