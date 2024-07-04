@@ -1,5 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/models/network_response.dart';
+import 'package:task_manager/data/network_caller/network_caller.dart';
+import 'package:task_manager/data/utilities/urls.dart';
 import 'package:task_manager/ui/utility/app_colors.dart';
 import 'package:task_manager/ui/utility/app_constants.dart';
 import 'package:task_manager/ui/widgets/background_widget.dart';
@@ -128,7 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // _registerUser();
+                            _registerUser();
                           }
                         },
                         child: const Icon(Icons.arrow_circle_right_outlined),
@@ -168,39 +171,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  // Future<void> _registerUser() async {
-  //   _registrationInProgress = true;
-  //   if (mounted) {
-  //     setState(() {});
-  //   }
-  //   Map<String, dynamic> requestInput = {
-  //     "email": _emailTEController.text.trim(),
-  //     "firstName": _firstNameTEController.text.trim(),
-  //     "lastName": _lastNameTEController.text.trim(),
-  //     "mobile": _mobileTEController.text.trim(),
-  //     "password": _passwordTEController.text,
-  //     "photo": ""
-  //   };
-  //   NetworkResponse response =
-  //       await NetworkCaller.postRequest(Urls.registration, body: requestInput);
-  //   _registrationInProgress = false;
-  //   if (mounted) {
-  //     setState(() {});
-  //   }
-  //   if (response.isSuccess) {
-  //     _clearTextFields();
-  //     if (mounted) {
-  //       showSnackBarMessage(context, 'Registration success');
-  //     }
-  //   } else {
-  //     if (mounted) {
-  //       showSnackBarMessage(
-  //         context,
-  //         response.errorMessage ?? 'Registration failed! Try again.',
-  //       );
-  //     }
-  //   }
-  // }
+  Future<void> _registerUser() async {
+    _registrationInProgress = true;
+    if (mounted) {
+      setState(() {});
+    }
+    Map<String, dynamic> requestInput = {
+      "email": _emailTEController.text.trim(),
+      "firstName": _firstNameTEController.text.trim(),
+      "lastName": _lastNameTEController.text.trim(),
+      "mobile": _mobileTEController.text.trim(),
+      "password": _passwordTEController.text,
+      "photo": ""
+    };
+    NetworkResponse response =
+        await NetworkCaller.postRequest(Urls.registration, body: requestInput);
+    _registrationInProgress = false;
+    if (mounted) {
+      setState(() {});
+    }
+    if (response.isSuccess) {
+      _clearTextFields();
+      if (mounted) {
+        showSnackBarMessage(context, 'Registration success');
+      }
+    } else {
+      if (mounted) {
+        showSnackBarMessage(
+          context,
+          response.errorMessage ?? 'Registration failed! Try again.',
+        );
+      }
+    }
+  }
 
   void _clearTextFields() {
     _emailTEController.clear();

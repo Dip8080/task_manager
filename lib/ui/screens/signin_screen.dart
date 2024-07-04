@@ -1,10 +1,17 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/controller/auth_controller.dart';
+import 'package:task_manager/data/models/login_model.dart';
+import 'package:task_manager/data/models/network_response.dart';
+import 'package:task_manager/data/network_caller/network_caller.dart';
+import 'package:task_manager/data/utilities/urls.dart';
 import 'package:task_manager/ui/screens/email_verification_screen.dart';
+import 'package:task_manager/ui/screens/main_bottom_nav_screen.dart';
 import 'package:task_manager/ui/screens/signup_screen.dart';
 import 'package:task_manager/ui/utility/app_colors.dart';
 import 'package:task_manager/ui/utility/app_constants.dart';
 import 'package:task_manager/ui/widgets/background_widget.dart';
+import 'package:task_manager/ui/widgets/snack_bar_messgae.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -117,20 +124,54 @@ class _SigninScreenState extends State<SigninScreen> {
       ),
     );
   }
-  // ------------------------------------------------
   void _onTapNextButton() {
     if (_formKey.currentState!.validate()) {
-      _signUp();
+      _signIn();
     }
   }
 
-  Future<void> _signUp() async {
+  Future<void> _signIn() async {
     _signInApiInProgress = true;
     if (mounted) {
       setState(() {});
     }
+
+    Map<String, dynamic> requestData = {
+      'email': _emailTEController.text.trim(),
+      'password': _passwordTEController.text,
+    };
+
+    final NetworkResponse response =
+        await NetworkCaller.postRequest(Urls.login, body: requestData);
+    _signInApiInProgress = false;
+    if (mounted) {
+      setState(() {});
+    }
+    if (response.isSuccess) {
+      LoginModel loginModel = LoginModel.fromJson(response.responseData);
+      await AuthController.saveUserAccessToken(loginModel.token!);
+      await AuthController.saveUserData(loginModel.userModel!);
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainBottomNavScreen(),
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        showSnackBarMessage(
+          context,
+          response.errorMessage ??
+              'Email/password is not correct. Try again',
+        );
+      }
+    }
   }
-    void _onTapSignUpButton() {
+
+  void _onTapSignUpButton() {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -147,7 +188,8 @@ class _SigninScreenState extends State<SigninScreen> {
       ),
     );
   }
-   @override
+
+  @override
   void dispose() {
     _emailTEController.dispose();
     _passwordTEController.dispose();
