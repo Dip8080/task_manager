@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:task_manager/controller/auth_controller.dart';
-import 'package:task_manager/ui/screens/signin_screen.dart';
-import 'package:task_manager/ui/screens/update_profile_screen.dart';
+import 'package:task_manager/ui/screens/auth/signin_screen.dart';
+import 'package:task_manager/ui/screens/auth/update_profile_screen.dart';
 import 'package:task_manager/ui/utility/app_colors.dart';
 
 AppBar profileAppBar(context, [bool fromUpdateProfile = false]) {
